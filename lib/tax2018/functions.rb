@@ -4,6 +4,19 @@ module Tax2018
   module Functions
     include Util::State
 
+    def adjust_annual_salary_for_taxes_and_withholdings(state, annual_income, married, dependents)
+      return 0 if annual_income == 0
+      # if get_annual_state_tax is nil (because the state is not in the 50 + DC), let's play it safe
+      # and try to find all the money
+      imputed_annual_state_tax = get_annual_state_tax(state, annual_income, married) || 0
+
+      total_taxes_and_withholdings = get_annual_federal_tax(annual_income, married, dependents) +
+        imputed_annual_state_tax +
+        annual_withholdings(annual_income)
+
+      annual_income - total_taxes_and_withholdings
+    end
+
     def get_annual_federal_tax(annual_income, married, dependents)
       if married
         standard_deduction = 24_000

@@ -3,7 +3,6 @@ require_relative './tax2021/federal/medicare'
 require_relative './tax2021/federal/social_security'
 require_relative './tax2021/federal/income_tax_brackets'
 require_relative './tax2021/state/income_tax_brackets'
-require 'yaml'
 require 'csv'
 
 class Get2021TaxData
@@ -39,7 +38,7 @@ class Get2021TaxData
     single = false
     married = true
 
-    CSV.open('federal_taxes_2021.csv', 'w') do |csv|
+    CSV.open('../data/federal_taxes_2021.csv', 'w') do |csv|
       salaries.each do |salary|
         puts "Salary = " + salary.to_s
         single = calculate_2021_federal_tax(salary, single)
@@ -48,7 +47,7 @@ class Get2021TaxData
       end
     end
 
-    CSV.open('state_taxes_2021.csv', 'w') do |csv|
+    CSV.open('../data/state_taxes_2021.csv', 'w') do |csv|
       states.each do |state|
         salaries.each do |salary|
           puts "Salary = " + salary.to_s
@@ -60,14 +59,14 @@ class Get2021TaxData
       end
     end
 
-    CSV.open('medicare_taxes_2021.csv', 'w') do |csv|
+    CSV.open('../data/medicare_taxes_2021.csv', 'w') do |csv|
       salaries.each do |salary|
         medicare_tax = calculate_2021_medicare_tax(salary)
         csv << [salary.to_s, medicare_tax.to_s]
       end
     end
 
-    CSV.open('social_security_taxes_2021.csv', 'w') do |csv|
+    CSV.open('../data/social_security_taxes_2021.csv', 'w') do |csv|
       salaries.each do |salary|
         social_security_tax = calculate_2021_social_security_tax(salary)
         csv << [salary.to_s, social_security_tax.to_s]
