@@ -12,8 +12,8 @@ class Get2021TaxDataNew
   include Tax2021New::Federal
   include Tax2021New::State
 
-  def calculate_2021_medicare_tax(annual_salary)
-    annual_medicare_tax(annual_salary)
+  def calculate_2021_medicare_tax(annual_salary, married)
+    annual_medicare_tax(annual_salary, married)
   end
 
   def calculate_2021_social_security_tax(annual_salary)
@@ -47,7 +47,7 @@ class Get2021TaxDataNew
       end
     end
 
-    CSV.open('../data/state_taxes_2021_new.csv', 'w') do |csv|
+    CSV.open('../data/state_taxes_2021_new_old.csv', 'w') do |csv|
       states.each do |state|
         salaries.each do |salary|
           puts "Salary = " + salary.to_s
@@ -61,8 +61,9 @@ class Get2021TaxDataNew
 
     CSV.open('../data/medicare_taxes_2021_new.csv', 'w') do |csv|
       salaries.each do |salary|
-        medicare_tax = calculate_2021_medicare_tax(salary)
-        csv << [salary.to_s, medicare_tax.to_s]
+        single_medicare_tax = calculate_2021_medicare_tax(salary, single)
+        married_medicare_tax = calculate_2021_medicare_tax(salary, married)
+        csv << [salary.to_s, single_medicare_tax.to_s, married_medicare_tax.to_s]
       end
     end
 
@@ -70,6 +71,16 @@ class Get2021TaxDataNew
       salaries.each do |salary|
         social_security_tax = calculate_2021_social_security_tax(salary)
         csv << [salary.to_s, social_security_tax.to_s]
+      end
+    end
+
+    CSV.open('../data/all_taxes_2021_new.csv', 'w') do |csv|
+      states.each do |state|
+        salaries.each do |salary|
+          single_tax = adjust_annual_salary_for_taxes_and_withholdings(state, salary, single, 0)
+          married_tax = adjust_annual_salary_for_taxes_and_withholdings(state, salary, married, 0)
+          csv << [state, salary.to_s, single_tax.to_s, married_tax.to_s]
+        end
       end
     end
   end

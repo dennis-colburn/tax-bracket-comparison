@@ -72,6 +72,16 @@ class Get2021TaxData
         csv << [salary.to_s, social_security_tax.to_s]
       end
     end
+
+    CSV.open('../data/all_taxes_2021.csv', 'w') do |csv|
+      states.each do |state|
+        salaries.each do |salary|
+          single_tax = adjust_annual_salary_for_taxes_and_withholdings(state, salary, single, 0)
+          married_tax = adjust_annual_salary_for_taxes_and_withholdings(state, salary, married, 0)
+          csv << [state, salary.to_s, single_tax.to_s, married_tax.to_s]
+        end
+      end
+    end
   end
 end
 
